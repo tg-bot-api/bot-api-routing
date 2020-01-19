@@ -11,16 +11,14 @@ class ArrayExtractor extends AbstractExtractor
 {
     /**
      * @param RouterUpdateInterface $update
-     * @param array                 $fields
-     * @return void
+     * @param string                $key
+     * @param                       $path
+     * @return mixed
      * @throws RouteExtractionException
      */
-    public function extract(RouterUpdateInterface $update, array $fields): void
+    public function extractField(RouterUpdateInterface $update, string $key, $path)
     {
-        foreach ($fields as $key => $path) {
-            $this->checkContextAvailability($update->getContext(), $key);
-            $update->getContext()->set($key, $this->getValue($update->getUpdate(), $path));
-        }
+        return $this->getValue($update->getUpdate(), $path);
     }
 
     /**
@@ -33,21 +31,38 @@ class ArrayExtractor extends AbstractExtractor
     {
         $result = $update;
         foreach (explode('.', $path) as $partial) {
-            if (!$result) {
-                throw new RouteExtractionException(sprintf('%s partial of %s is not defined', $partial, $path));
+            if (null === $result) {
+                throw new RouteExtractionException(sprintf(
+                    '`%s` partial of `%s` is null or not defined',
+                    $partial,
+                    $path
+                ));
             }
+
             if (is_array($result)) {
+                if (!isset($result[$partial])) {
+                    throw new RouteExtractionException(
+                        sprintf('Cannot access to property `%s` of array', $partial)
+                    );
+                }
+
                 $result = $result[$partial];
                 continue;
             }
+
             if (is_object($result)) {
                 if (!property_exists($result, $partial)) {
-                    throw new RouteExtractionException(sprintf('Cannot access to property %s of %s', $partial, get_class($result)));
+                    throw new RouteExtractionException(
+                        sprintf('Cannot access to property `%s` of %s', $partial, get_class($result))
+                    );
                 }
                 $result = $result->$partial;
                 continue;
             }
-            throw new RouteExtractionException(sprintf('Cannot access to %s key on %s type', $partial, gettype($result)));
+
+            throw new RouteExtractionException(
+                sprintf('Cannot access to `%s` key on %s type', $partial, gettype($result))
+            );
         }
         return $result;
     }

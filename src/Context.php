@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
-
 use TgBotApi\BotApiRouting\Contracts\ContextInterface;
 
 class Context implements ContextInterface
@@ -27,7 +26,7 @@ class Context implements ContextInterface
      * @param        $value
      * @return self
      */
-    public function set(string $id, $value): self
+    public function set(string $id, $value): ContextInterface
     {
         $this->data[$id] = $value;
         return $this;

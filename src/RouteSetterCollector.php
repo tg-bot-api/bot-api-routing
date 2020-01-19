@@ -3,35 +3,34 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
-use TgBotApi\BotApiRouting\Contracts\RouterInterface;
 use TgBotApi\BotApiRouting\Contracts\RouteSetterInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 
 class RouteSetterCollector
 {
-    private $routes;
+    private $routeSetters;
     private $collection;
 
     /**
      * RouteCollector constructor.
      *
      * @param TelegramRouteCollection $collection
-     * @param RouteSetterInterface[]  $routes
+     * @param RouteSetterInterface[]  $routeSetters
      */
-    public function __construct(TelegramRouteCollection $collection, array $routes)
+    public function __construct(TelegramRouteCollection $collection, array $routeSetters)
     {
-        $this->routes[] = $routes;
+        $this->routeSetters[] = $routeSetters;
         $this->collection = $collection;
     }
 
     public function collect(): void
     {
-        foreach ($this->routes as $routeSetter) {
+        foreach ($this->routeSetters as $routeSetter) {
             $this->setRoutes($routeSetter);
         }
     }
 
-    private function setRoutes(TelegramRouteInterface $setter): void
+    private function setRoutes(RouteSetterInterface $setter): void
     {
         $setter->register($this->collection);
     }

@@ -3,20 +3,17 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting\Contracts;
 
-
-use TgBotApi\BotApiRouting\TelegramRoute;
-
 interface TelegramRouteCollectionInterface
 {
     /**
-     * @param TelegramRoute $route
-     * @return TelegramRoute
+     * @param TelegramRouteInterface $route
+     * @return TelegramRouteInterface
      */
-    public function add(TelegramRoute $route): TelegramRoute;
+    public function add(TelegramRouteInterface $route): TelegramRouteInterface;
 
     /**
      * @param string $updateType
-     * @return TelegramRoute[]
+     * @return TelegramRouteInterface[]
      */
     public function get(string $updateType): ?array;
 }

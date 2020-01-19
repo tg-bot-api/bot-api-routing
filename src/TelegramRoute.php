@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
+use TgBotApi\BotApiRouting\Contracts\ExtractorInterface;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionException;
 use TgBotApi\BotApiRouting\Extractor\ArrayExtractor;
-use TgBotApi\BotApiRouting\TelegramRouter\Extractor\ExtractorInterface;
 
 /**
  * Class TelegramRoute
@@ -50,7 +50,6 @@ class TelegramRoute implements TelegramRouteInterface
         $this->rules = $rules;
         $this->endpoint = $endpoint;
     }
-
 
     /**
      * @return RouteRuleInterface[]

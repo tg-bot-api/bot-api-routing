@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TgBotApi\BotApiRouting\TelegramRouter\Extractor;
-
-use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
+namespace TgBotApi\BotApiRouting\Contracts;
 
 /**
  * Interface ExtractorInterface

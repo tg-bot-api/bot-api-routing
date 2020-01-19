@@ -29,8 +29,6 @@ class RegexRule implements RouteRuleInterface
 
         $text = $message->text ?? $message->caption;
 
-        $update->getContext()->set('id', 'some value');
-
         return mb_ereg_match($this->regex, $text);
     }
 }

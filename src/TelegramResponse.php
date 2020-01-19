@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
-
 use TgBotApi\BotApiBase\Method\Interfaces\MethodInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramResponseInterface;
 

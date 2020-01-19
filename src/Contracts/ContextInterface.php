@@ -16,7 +16,7 @@ interface ContextInterface
      * @param        $value
      * @return self
      */
-    public function set(string $id, $value): self;
+    public function set(string $id, $value): ContextInterface;
 
     /**
      * @param string $id

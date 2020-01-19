@@ -9,11 +9,11 @@ use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 
 /**
- * Class RouterUpdateType
+ * Class RouterUpdate
  *
  * @package App\TelegramRouter
  */
-class RouterUpdateType implements RouterUpdateInterface
+class RouterUpdate implements RouterUpdateInterface
 {
     /**
      * @var UpdateType
@@ -21,7 +21,7 @@ class RouterUpdateType implements RouterUpdateInterface
     private $update;
 
     /**
-     * @var Context
+     * @var ContextInterface
      */
     private $context;
 
@@ -31,7 +31,7 @@ class RouterUpdateType implements RouterUpdateInterface
     private $route;
 
     /**
-     * RouterUpdateType constructor.
+     * RouterUpdate constructor.
      *
      * @param UpdateType       $update
      * @param ContextInterface $context
@@ -64,7 +64,7 @@ class RouterUpdateType implements RouterUpdateInterface
     }
 
     /**
-     * @return Context
+     * @return ContextInterface
      */
     public function getContext(): ContextInterface
     {

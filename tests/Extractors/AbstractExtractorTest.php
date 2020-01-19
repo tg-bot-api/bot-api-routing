@@ -9,7 +9,6 @@ use TgBotApi\BotApiBase\Type\UpdateType;
 use TgBotApi\BotApiRouting\Context;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionEmptyException;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionException;
-use TgBotApi\BotApiRouting\Extractor\AbstractExtractor;
 use TgBotApi\BotApiRouting\RouterUpdate;
 
 class AbstractExtractorTest extends \PHPUnit\Framework\TestCase

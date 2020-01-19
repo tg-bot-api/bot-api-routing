@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TgBotApi\BotApiRouting\Extractor;
+namespace TgBotApi\BotApiRouting\Extractors;
 
 use TgBotApi\BotApiRouting\Contracts\ContextInterface;
 use TgBotApi\BotApiRouting\Contracts\ExtractorInterface;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace TgBotApi\BotApiRouting\Extractor;
+namespace TgBotApi\BotApiRouting\Extractors;
 
 use PHPUnit\Framework\TestCase;
 use TgBotApi\BotApiBase\Type\ChatType;
@@ -51,6 +51,7 @@ class ArrayExtractorTest extends TestCase
         $routerUpdate = new RouterUpdate($updateType, $context);
         $extractor = new ArrayExtractor();
         $this->expectExceptionMessageMatches('/`a` partial of `message.a` is null or not defined/');
+        $this->expectException(RouteExtractionException::class);
         $extractor->extract($routerUpdate, [
             'message' => 'message.a'
         ]);
@@ -67,6 +68,7 @@ class ArrayExtractorTest extends TestCase
         $routerUpdate = new RouterUpdate($updateType, $context);
         $extractor = new ArrayExtractor();
         $this->expectExceptionMessageMatches('/Cannot access to `a` key on integer type/');
+        $this->expectException(RouteExtractionException::class);
         $extractor->extract($routerUpdate, [
             'message' => 'message.a'
         ]);
@@ -83,6 +85,7 @@ class ArrayExtractorTest extends TestCase
         $routerUpdate = new RouterUpdate($updateType, $context);
         $extractor = new ArrayExtractor();
         $this->expectExceptionMessageMatches('/Cannot access to property `a` of array/');
+        $this->expectException(RouteExtractionException::class);
         $extractor->extract($routerUpdate, [
             'message' => 'message.a'
         ]);
@@ -99,6 +102,7 @@ class ArrayExtractorTest extends TestCase
         $routerUpdate = new RouterUpdate($updateType, $context);
         $extractor = new ArrayExtractor();
         $this->expectExceptionMessageMatches('/Cannot access to property `a` of stdClass/');
+        $this->expectException(RouteExtractionException::class);
         $extractor->extract($routerUpdate, [
             'message' => 'message.a'
         ]);

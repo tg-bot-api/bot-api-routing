@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\TelegramRouter\Rules;
+namespace TgBotApi\BotApiRouting\Rules;
 
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class RegexRule implements RouteRuleInterface
+class RegexMessageTextRule implements RouteRuleInterface
 {
     private $regex;
 
@@ -21,14 +21,9 @@ class RegexRule implements RouteRuleInterface
      */
     public function match(RouterUpdateInterface $update): bool
     {
-        $message = $update->getUpdate()->message;
-
-        if (!$message->text && !$message->caption) {
+        if (!($text = $update->getUpdate()->message->text)) {
             return false;
         }
-
-        $text = $message->text ?? $message->caption;
-
-        return mb_ereg_match($this->regex, $text);
+        return (bool)preg_match($this->regex, $text);
     }
 }

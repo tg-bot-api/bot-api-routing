@@ -8,7 +8,7 @@ use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionException;
-use TgBotApi\BotApiRouting\Extractor\ArrayExtractor;
+use TgBotApi\BotApiRouting\Extractors\ArrayExtractor;
 
 /**
  * Class TelegramRoute
@@ -79,6 +79,8 @@ class TelegramRoute implements TelegramRouteInterface
             $this->extractors[] = [ArrayExtractor::class, $fields];
             return $this;
         }
+
+        //@todo add check for extractor implemets interface
 
         if ($extractor instanceof ExtractorInterface || is_string($extractor)) {
             $this->extractors[] = [$extractor, $fields];

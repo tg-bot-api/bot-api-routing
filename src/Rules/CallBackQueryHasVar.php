@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\TelegramRouter\Rules;
+namespace TgBotApi\BotApiRouting\Rules;
 
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;

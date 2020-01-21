@@ -6,39 +6,25 @@ namespace TgBotApi\BotApiRouting\Rules;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class DocumentFileNameRule implements RouteRuleInterface
+class DocumentFileNameRule extends IsDocumentRule
 {
     /**
      * @var string
      */
     private $fileName;
 
-    /**
-     * @var bool
-     */
     private $isRegex;
-
-    /**
-     * @var string
-     */
-    private $regexParams;
-
-    private $documentRule;
 
     /**
      * DocumentFileNameRule constructor.
      *
-     * @param string      $fileName
-     * @param bool        $isRegex
-     * @param string|null $regexParams
+     * @param string $fileName
+     * @param bool   $isRegex
      */
-    public function __construct(string $fileName, $isRegex = false, string $regexParams = null)
+    public function __construct(string $fileName, bool $isRegex = false)
     {
         $this->fileName = $fileName;
         $this->isRegex = $isRegex;
-        $this->regexParams = $regexParams;
-
-        $this->documentRule = new DocumentRule();
     }
 
     /**
@@ -47,12 +33,12 @@ class DocumentFileNameRule implements RouteRuleInterface
      */
     public function match(RouterUpdateInterface $update): bool
     {
-        if (!$this->documentRule->match($update)) {
+        if (!parent::match($update)) {
             return false;
         }
 
-        $document = $update->getUpdate()->message->document;
+        $name = $update->getUpdate()->message->document->fileName;
 
-        return $this->isRegex ? mb_ereg_match($this->fileName, $document->fileName, $this->regexParams) : $document->fileName === $this->fileName;
+        return $this->isRegex ? (bool)preg_match(sprintf('/^%s$/', $this->fileName), $name) : $this->fileName === $name;
     }
 }

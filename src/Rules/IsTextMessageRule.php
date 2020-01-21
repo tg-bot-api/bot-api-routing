@@ -6,7 +6,7 @@ namespace TgBotApi\BotApiRouting\Rules;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class TextMessageRule implements RouteRuleInterface
+class IsTextMessageRule implements RouteRuleInterface
 {
     /**
      * @param RouterUpdateInterface $update

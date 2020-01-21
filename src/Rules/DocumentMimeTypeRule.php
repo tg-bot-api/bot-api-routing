@@ -5,7 +5,7 @@ namespace TgBotApi\BotApiRouting\Rules;
 
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class DocumentMimeTypeRule extends DocumentRule
+class DocumentMimeTypeRule extends IsDocumentRule
 {
 
     /**
@@ -22,12 +22,10 @@ class DocumentMimeTypeRule extends DocumentRule
      * DocumentMimeTypeRule constructor.
      *
      * @param string $mimeType
-     * @param bool   $isRegex
      */
-    public function __construct(string $mimeType, $isRegex = false)
+    public function __construct(string $mimeType)
     {
         $this->mimeType = $mimeType;
-        $this->isRegex = $isRegex;
     }
 
     /**
@@ -40,8 +38,9 @@ class DocumentMimeTypeRule extends DocumentRule
             return false;
         }
 
-        $document = $update->getUpdate()->message->document;
-
-        return $this->isRegex ? mb_ereg_match($this->mimeType, $document->mimeType) : $document->mimeType === $this->mimeType;
+        return (boolean)preg_match(
+            sprintf('~^%s$~', $this->mimeType),
+            $update->getUpdate()->message->document->mimeType
+        );
     }
 }

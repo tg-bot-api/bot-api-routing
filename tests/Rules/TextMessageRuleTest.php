@@ -12,7 +12,7 @@ class TextMessageRuleTest extends TestCase
 
     public function testMatchSuccess(): void
     {
-        $rule = new TextMessageRule();
+        $rule = new IsTextMessageRule();
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'someText';
         $this->assertTrue($rule->match($update));
@@ -20,7 +20,7 @@ class TextMessageRuleTest extends TestCase
 
     public function testMatchFail(): void
     {
-        $rule = new TextMessageRule();
+        $rule = new IsTextMessageRule();
         $this->assertFalse($rule->match($this->getRouterUpdate()));
     }
 }

@@ -6,7 +6,7 @@ namespace TgBotApi\BotApiRouting\Rules;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class DocumentRule implements RouteRuleInterface
+class IsDocumentRule implements RouteRuleInterface
 {
     /**
      * @param RouterUpdateInterface $update

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TgBotApi\BotApiRouting;
 
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
+use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 
 class TelegramRouteCollection implements TelegramRouteCollectionInterface
 {
@@ -13,10 +14,10 @@ class TelegramRouteCollection implements TelegramRouteCollectionInterface
     private $collection = [];
 
     /**
-     * @param TelegramRoute $route
+     * @param TelegramRouteInterface $route
      * @return TelegramRoute
      */
-    public function add(TelegramRoute $route): TelegramRoute
+    public function add(TelegramRouteInterface $route): TelegramRouteInterface
     {
         $this->collection[$route->getUpdateType()][] = $route;
         return $route;

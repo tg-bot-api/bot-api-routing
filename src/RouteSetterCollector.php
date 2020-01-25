@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
-use TgBotApi\BotApiRouting\Contracts\RouteSetterInterface;
+use TgBotApi\BotApiRouting\Contracts\RouteSetterTypes;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 
 class RouteSetterCollector
@@ -15,7 +15,7 @@ class RouteSetterCollector
      * RouteCollector constructor.
      *
      * @param TelegramRouteCollection $collection
-     * @param RouteSetterInterface[]  $routeSetters
+     * @param RouteSetterTypes[]      $routeSetters
      */
     public function __construct(TelegramRouteCollection $collection, array $routeSetters)
     {
@@ -30,7 +30,7 @@ class RouteSetterCollector
         }
     }
 
-    private function setRoutes(RouteSetterInterface $setter): void
+    private function setRoutes(RouteSetterTypes $setter): void
     {
         $setter->register($this->collection);
     }

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace TgBotApi\BotApiRouting\Contracts;
+namespace TgBotApi\BotApiRouting\Interfaces;
 
-interface RouteSetterInterface
+interface UpdateTypeTypes
 {
     public const  TYPE_EDITED_MESSAGE = 'editedMessage';
     public const  TYPE_MESSAGE = 'message';
@@ -14,6 +14,4 @@ interface RouteSetterInterface
     public const  TYPE_INLINE_QUERY = 'inlineQuery';
     public const  TYPE_PRE_CHECKOUT_QUERY = 'preCheckoutQuery';
     public const  TYPE_SHIPPING_QUERY = 'shippingQuery';
-
-    public function register(TelegramRouteCollectionInterface $collection): void;
 }

@@ -75,12 +75,26 @@ class TelegramRoute implements TelegramRouteInterface
      */
     public function extract(array $fields, $extractor = null): TelegramRouteInterface
     {
-        if (!$extractor) {
+        if ($extractor === null) {
             $this->extractors[] = [ArrayExtractor::class, $fields];
             return $this;
         }
 
-        //@todo add check for extractor implemets interface
+        if (is_string($extractor) && !class_exists($extractor)) {
+            throw new RouteExtractionException(sprintf(
+                '$extractor should be valid class path `%s` provided.',
+                $extractor
+            ));
+        }
+
+
+        if (is_string($extractor) && !in_array(ExtractorInterface::class, class_implements($extractor), true)) {
+            throw new RouteExtractionException(sprintf(
+                '$extractor must implements `%s`, `%s` provided',
+                ExtractorInterface::class,
+                $extractor
+            ));
+        }
 
         if ($extractor instanceof ExtractorInterface || is_string($extractor)) {
             $this->extractors[] = [$extractor, $fields];
@@ -89,14 +103,14 @@ class TelegramRoute implements TelegramRouteInterface
 
         if (is_object($extractor)) {
             throw new RouteExtractionException(sprintf(
-                'Argument must be instance of %s or string className or array, %s provided.',
+                'Argument must be instance of `%s` or string className, or null, `%s` provided.',
                 ExtractorInterface::class,
                 get_class($extractor)
             ));
         }
 
         throw new RouteExtractionException(sprintf(
-            'Argument must be instance of %s or string className or array, %s provided.',
+            'Argument must be instance of `%s` or string className or null, `%s` provided.',
             ExtractorInterface::class,
             gettype($extractor)
         ));

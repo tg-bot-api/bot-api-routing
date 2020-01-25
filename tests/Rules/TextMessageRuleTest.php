@@ -23,4 +23,12 @@ class TextMessageRuleTest extends TestCase
         $rule = new IsTextMessageRule();
         $this->assertFalse($rule->match($this->getRouterUpdate()));
     }
+
+    public function testMatchFailNotMessage(): void
+    {
+        $rule = new IsTextMessageRule();
+        $update = $this->getRouterUpdate();
+        $update->getUpdate()->message = null;
+        $this->assertFalse($rule->match($update));
+    }
 }

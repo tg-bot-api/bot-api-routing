@@ -5,7 +5,7 @@ namespace TgBotApi\BotApiRouting\Rules;
 
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class ChannelTextPostRule
+class ChannelPostTextRule
 {
     /**
      * @param RouterUpdateInterface $update
@@ -16,6 +16,6 @@ class ChannelTextPostRule
         if (!$update->getUpdate()->channelPost) {
             return false;
         }
-        return (bool)$update->getUpdate()->channelPost->text;
+        return $update->getUpdate()->channelPost->text !== null;
     }
 }

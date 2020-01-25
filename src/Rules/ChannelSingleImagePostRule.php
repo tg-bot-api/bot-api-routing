@@ -13,11 +13,10 @@ class ChannelSingleImagePostRule
      */
     public function match(RouterUpdateInterface $update): bool
     {
-        $post = $update->getUpdate()->channelPost;
-        if (!$post || $post->mediaGroupId || !$post->caption) {
+        if (!($post = $update->getUpdate()->channelPost) || $post->mediaGroupId) {
             return false;
         }
 
-        return (bool)$post->photo;
+        return $post->photo !== null;
     }
 }

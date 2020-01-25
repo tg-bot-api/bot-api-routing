@@ -8,11 +8,19 @@ use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
 class CallBackQueryHasVar implements RouteRuleInterface
 {
-    private $regex;
+    private $regex = [];
 
-    public function __construct(string $variableKey, string $type = '.+')
+    /**
+     * CallBackQueryHasVar constructor.
+     *
+     * @param string[] $variableKey
+     */
+    public function __construct(array $variableKey)
     {
-        $this->regex = "/^$variableKey:$type$/";
+        foreach ($variableKey as $key => $value) {
+            [$varName, $varMask] = is_int($key) ? [$value, '.+'] : [$key, $value ?: '.+'];
+            $this->regex[] = sprintf("/%s\((%s?)\)/", $varName, $varMask);
+        }
     }
 
     /**
@@ -21,10 +29,16 @@ class CallBackQueryHasVar implements RouteRuleInterface
      */
     public function match(RouterUpdateInterface $update): bool
     {
-        if (!$update->getUpdate()->callbackQuery->data) {
+        if (!$update->getUpdate()->callbackQuery || !($data = $update->getUpdate()->callbackQuery->data)) {
             return false;
         }
 
-        return (bool)preg_match($this->regex, $update->getUpdate()->callbackQuery->data);
+        foreach ($this->regex as $regex) {
+            if (!preg_match($regex, $data)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

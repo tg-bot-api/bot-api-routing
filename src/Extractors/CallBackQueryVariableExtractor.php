@@ -11,7 +11,8 @@ class CallBackQueryVariableExtractor extends AbstractExtractor
     protected function extractField(RouterUpdateInterface $update, string $key, $field)
     {
         $data = $update->getUpdate()->callbackQuery->data;
-        if (preg_match("/$field\((.+?)\)/", $data, $result) && count($result) === 2) {
+
+        if (preg_match(sprintf("/%s\((.+?)\)/", $field), $data, $result) && count($result) === 2) {
             return $result[count($result) - 1];
         }
 

@@ -7,7 +7,7 @@ use TgBotApi\BotApiBase\Type\ChatType;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 
-class ChatTypeMessageRule implements RouteRuleInterface
+class ChatTypeRule implements RouteRuleInterface
 {
 
     private $types;

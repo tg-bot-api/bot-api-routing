@@ -3,16 +3,22 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting\Router;
 
+use Closure;
+use ReflectionException;
+use ReflectionFunction;
 use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use ReflectionNamedType;
 use TgBotApi\BotApiBase\Type\UpdateType;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramResponseInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 use TgBotApi\BotApiRouting\Exceptions\InvalidTypeException;
 use TgBotApi\BotApiRouting\Exceptions\RouterParameterException;
+use TgBotApi\BotApiRouting\Exceptions\RoutingException;
 use TgBotApi\BotApiRouting\TelegramResponse;
 
-class Router extends AbstractRouter
+class TelegramRouter extends AbstractTelegramRouter
 {
     /**
      * @param RouterUpdateInterface $update
@@ -21,17 +27,24 @@ class Router extends AbstractRouter
      *
      * @throws InvalidTypeException
      * @throws RouterParameterException
-     * @throws \ReflectionException
+     * @throws RoutingException
+     * @throws ReflectionException
      */
     protected function invokeUpdate(RouterUpdateInterface $update): TelegramResponseInterface
     {
-        if ($update->getRoute()->getEndpoint() instanceof \Closure) {
-            $reflectionFunction = new \ReflectionFunction($update->getRoute()->getEndpoint());
+        if ($update->getActivatedRoute() === null) {
+            throw new RoutingException(sprintf(
+                'activatedRoute must be instance of TelegramRouterInterface, `%s` provided',
+                getType($update->getActivatedRoute())
+            ));
+        }
+        if ($update->getActivatedRoute()->getEndpoint() instanceof Closure) {
+            $reflectionFunction = new ReflectionFunction($update->getActivatedRoute()->getEndpoint());
             return $reflectionFunction->invokeArgs($this->getInvokeParams($reflectionFunction, $update));
         }
 
-        [$class, $method] = $this->getRouteClassAndMethod($update->getRoute());
-        $reflectionMethod = new \ReflectionMethod(implode('::', [$class, $method]));
+        [$class, $method] = $this->getRouteClassAndMethod($update->getActivatedRoute());
+        $reflectionMethod = new ReflectionMethod(implode('::', [$class, $method]));
         return $reflectionMethod->invokeArgs(
             $this->container->get($class),
             $this->getInvokeParams($reflectionMethod, $update)
@@ -58,7 +71,7 @@ class Router extends AbstractRouter
         foreach ($reflectionParams as $param) {
             $paramType = $param->getType();
             /** @var null|string $typeName */
-            $typeName = $paramType ? $paramType->getName() : null;
+            $typeName = $paramType instanceof ReflectionNamedType ? $paramType->getName() : null;
             if ($typeName && $update->getContext()->isSet((string)$typeName)) {
                 $contextValue = $update->getContext()->get((string)$typeName);
                 if ($contextValue instanceof $typeName || ($param->allowsNull() && $contextValue === null)) {

@@ -26,7 +26,7 @@ interface RouterUpdateInterface
 
     public function getContext(): ContextInterface;
 
-    public function getRoute(): TelegramRouteInterface;
+    public function getActivatedRoute(): ?TelegramRouteInterface;
 
-    public function setRoute(TelegramRouteInterface $route): void;
+    public function setActivatedRoute(TelegramRouteInterface $route): void;
 }

@@ -11,5 +11,11 @@ interface TelegramResponseInterface
 
     public function getResponseType(): ?string;
 
-    public function getCallback(): ?callable;
+    public function resolve($response, ContextInterface $context): void;
+
+    /**
+     * @param callable $callback
+     * @return TelegramResponseInterface
+     */
+    public function then(callable $callback): TelegramResponseInterface;
 }

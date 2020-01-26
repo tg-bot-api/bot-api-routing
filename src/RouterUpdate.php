@@ -74,7 +74,7 @@ class RouterUpdate implements RouterUpdateInterface
     /**
      * @return TelegramRouteInterface
      */
-    public function getRoute(): TelegramRouteInterface
+    public function getActivatedRoute(): TelegramRouteInterface
     {
         return $this->route;
     }
@@ -82,7 +82,7 @@ class RouterUpdate implements RouterUpdateInterface
     /**
      * @param TelegramRouteInterface $route
      */
-    public function setRoute(TelegramRouteInterface $route): void
+    public function setActivatedRoute(TelegramRouteInterface $route): void
     {
         $this->route = $route;
     }

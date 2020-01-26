@@ -4,20 +4,31 @@ declare(strict_types=1);
 namespace TgBotApi\BotApiRouting;
 
 use TgBotApi\BotApiBase\Method\Interfaces\MethodInterface;
+use TgBotApi\BotApiRouting\Contracts\ContextInterface;
+use TgBotApi\BotApiRouting\Contracts\ResponseClosure;
 use TgBotApi\BotApiRouting\Contracts\TelegramResponseInterface;
 
 class TelegramResponse implements TelegramResponseInterface
 {
 
+    /**
+     * @var MethodInterface
+     */
     private $method;
+    /**
+     * @var string|null
+     */
     private $responseType;
-    private $callback;
+    /**
+     * @var callable[]
+     */
+    private $callbacks;
 
     public function __construct(MethodInterface $method, ?string $responseType = null, callable $callback = null)
     {
         $this->method = $method;
         $this->responseType = $responseType;
-        $this->callback = $callback;
+        $this->callbacks[] = $callback;
     }
 
     public function getTelegramRequest(): MethodInterface
@@ -30,14 +41,25 @@ class TelegramResponse implements TelegramResponseInterface
         return $this->responseType;
     }
 
-    public function getCallback(): ?callable
+    public function getCallbacks(): array
     {
-        return $this->callback;
+        return $this->callbacks;
     }
 
-    public function then(callable $callback): self
+    /**
+     * @param callable $callback
+     * @return TelegramResponseInterface
+     */
+    public function then(callable $callback): TelegramResponseInterface
     {
-        $this->callback = $callback;
+        $this->callbacks[] = $callback;
         return $this;
+    }
+
+    public function resolve($response, ContextInterface $context): void
+    {
+        foreach ($this->callbacks as $callback) {
+            $callback($response, $context);
+        }
     }
 }

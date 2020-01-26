@@ -28,7 +28,7 @@ class TelegramRoute implements TelegramRouteInterface
     protected $rules;
 
     /**
-     * @var callable|null
+     * @var callable|string|null
      */
     protected $endpoint;
 
@@ -144,7 +144,7 @@ class TelegramRoute implements TelegramRouteInterface
                 return false;
             }
         }
-        $update->setRoute($this);
+        $update->setActivatedRoute($this);
         return true;
     }
 }

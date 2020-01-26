@@ -18,9 +18,10 @@
     ],
     "require": {
         "php": "~7.2",
-        "tg-bot-api/bot-api-base": "^1",
-      "ext-mbstring": "*",
-      "ext-json": "*"
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "psr/container": "^1.0",
+        "tg-bot-api/bot-api-base": "^1"
     },
     "require-dev": {
         "phpunit/phpunit" : "^8.0",

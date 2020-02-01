@@ -34,7 +34,7 @@ abstract class AbstractTelegramRouter implements TelegramRouterInterface
      * @param RouterUpdateInterface $update
      * @return TelegramResponseInterface
      */
-    abstract protected function invokeUpdate(RouterUpdateInterface $update): TelegramResponseInterface;
+    abstract protected function invokeUpdate(RouterUpdateInterface $update): ?TelegramResponseInterface;
 
     /**
      * @param RouterUpdateInterface $update

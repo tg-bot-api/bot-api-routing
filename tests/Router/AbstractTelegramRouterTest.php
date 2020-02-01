@@ -103,6 +103,19 @@ class AbstractTelegramRouterTest extends TestCase
         $router->dispatch($update);
     }
 
+    public function testExtractionLogicException(): void
+    {
+        $collection = new TelegramRouteCollection();
+        $route = $this->createMock(TelegramRoute::class);
+        $route->method('match')->willReturn(true);
+        $route->method('getUpdateType')->willReturn(UpdateTypeTypes::TYPE_MESSAGE);
+        $collection->add($route);
+
+        $router = $this->getAbstractRouterMock($collection, $this->getContainerWrapperMock());
+
+        $this->expectException(\LogicException::class);
+        $this->assertInstanceOf(TelegramResponse::class, $router->dispatch($this->getRouterUpdate()));
+    }
 
     private function getContainerWrapperMock(): ContainerInterface
     {
@@ -122,20 +135,6 @@ class AbstractTelegramRouterTest extends TestCase
             AbstractTelegramRouter::class,
             [$collection, $container]
         );
-    }
-
-    public function testExtractionLogicException(): void
-    {
-        $collection = new TelegramRouteCollection();
-        $route = $this->createMock(TelegramRoute::class);
-        $route->method('match')->willReturn(true);
-        $route->method('getUpdateType')->willReturn(UpdateTypeTypes::TYPE_MESSAGE);
-        $collection->add($route);
-
-        $router = $this->getAbstractRouterMock($collection, $this->getContainerWrapperMock());
-
-        $this->expectException(\LogicException::class);
-        $this->assertInstanceOf(TelegramResponse::class, $router->dispatch($this->getRouterUpdate()));
     }
 
     private function getCollection(array $rules): TelegramRouteCollection

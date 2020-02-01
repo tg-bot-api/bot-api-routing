@@ -30,7 +30,7 @@ class TelegramRouter extends AbstractTelegramRouter
      * @throws RoutingException
      * @throws ReflectionException
      */
-    protected function invokeUpdate(RouterUpdateInterface $update): TelegramResponseInterface
+    protected function invokeUpdate(RouterUpdateInterface $update): ?TelegramResponseInterface
     {
         if ($update->getActivatedRoute() === null) {
             throw new RoutingException(sprintf(
@@ -38,15 +38,44 @@ class TelegramRouter extends AbstractTelegramRouter
                 getType($update->getActivatedRoute())
             ));
         }
-        if ($update->getActivatedRoute()->getEndpoint() instanceof Closure) {
-            $reflectionFunction = new ReflectionFunction($update->getActivatedRoute()->getEndpoint());
+
+        $endpoint = $update->getActivatedRoute()->getEndpoint();
+
+        if ($endpoint instanceof Closure) {
+            $reflectionFunction = new ReflectionFunction($endpoint);
             return $reflectionFunction->invokeArgs($this->getInvokeParams($reflectionFunction, $update));
         }
 
-        [$class, $method] = $this->getRouteClassAndMethod($update->getActivatedRoute());
-        $reflectionMethod = new ReflectionMethod(implode('::', [$class, $method]));
+        [$classId, $methodName] = $this->getControllerClassAndMethod($update->getActivatedRoute());
+
+        if (!$this->container->has($classId)) {
+            throw new RoutingException(sprintf(
+                'Class with id `%s` not found in container.',
+                $classId
+            ));
+        }
+
+        $class = $this->container->get($classId);
+
+        if (!is_object($class)) {
+            throw new \TypeError(sprintf(
+                'Container should return instance of controller, but `%s` returned.',
+                getType($class)
+            ));
+        }
+
+        if (!method_exists($class, $methodName)) {
+            throw new RoutingException(sprintf(
+                'Invalid class or method identifier, method `%s` not found in class `%s`',
+                $methodName,
+                get_class($class)
+            ));
+        }
+
+        $reflectionMethod = new ReflectionMethod($class, $methodName);
+
         return $reflectionMethod->invokeArgs(
-            $this->container->get($class),
+            $class,
             $this->getInvokeParams($reflectionMethod, $update)
         );
     }
@@ -149,13 +178,12 @@ class TelegramRouter extends AbstractTelegramRouter
      * @return array
      * @throws RouterParameterException
      */
-    private function getRouteClassAndMethod(TelegramRouteInterface $route): array
+    private function getControllerClassAndMethod(TelegramRouteInterface $route): array
     {
-        $message = '%s is not valid class and method name. Please use class::method format or use Invokable class';
         $routeParts = explode('::', $route->getEndpoint());
         if (count($routeParts) > 2) {
             throw new RouterParameterException(sprintf(
-                $message,
+                '`%s` is not valid class and method name. Please use class::method format or use Invokable class path.',
                 $route->getEndpoint()
             ));
         }

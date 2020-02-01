@@ -7,9 +7,7 @@ use TgBotApi\BotApiBase\Method\Interfaces\MethodInterface;
 
 interface TelegramResponseInterface
 {
-    public function getTelegramRequest(): MethodInterface;
-
-    public function getResponseType(): ?string;
+    public function getTelegramMethod(): MethodInterface;
 
     public function resolve($response, ContextInterface $context): void;
 

@@ -8,6 +8,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use ReflectionMethod;
+use TgBotApi\BotApiRouting\Contracts\ParamResolverInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
 use TgBotApi\BotApiRouting\Exceptions\RouterParameterException;
 use TgBotApi\BotApiRouting\Exceptions\RoutingException;
@@ -26,8 +27,7 @@ class TelegramRouterTest extends TestCase
         $collection = $this->getCollection([]);
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
-        $router = new TelegramRouter($collection, $this->getContainerWrapperMock());
-
+        $router = new TelegramRouter($collection, $this->getContainerWrapperMock(), $this->getResolver());
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
@@ -41,7 +41,8 @@ class TelegramRouterTest extends TestCase
         $collection = $this->getCollection([]);
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
-        $router = new TelegramRouter($collection, $this->getContainerWrapperMock());
+        $resolver = $this->getResolver([$update->getUpdate()->message]);
+        $router = new TelegramRouter($collection, $this->getContainerWrapperMock(), $resolver);
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -67,7 +68,7 @@ class TelegramRouterTest extends TestCase
         $container->method('get')->willReturn($controllerStub);
         $container->method('has')->willReturn(true);
 
-        $router = new TelegramRouter($collection, $container);
+        $router = new TelegramRouter($collection, $container, $this->getResolver());
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -89,7 +90,7 @@ class TelegramRouterTest extends TestCase
         $container->method('get')->willReturn($controllerStub);
         $container->method('has')->willReturn(true);
 
-        $router = new TelegramRouter($collection, $container);
+        $router = new TelegramRouter($collection, $container, $this->getResolver());
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -110,7 +111,7 @@ class TelegramRouterTest extends TestCase
         $container->method('get')->willReturn($controllerStub);
         $container->method('has')->willReturn(true);
 
-        $router = new TelegramRouter($collection, $container);
+        $router = new TelegramRouter($collection, $container, $this->getResolver());
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -131,7 +132,7 @@ class TelegramRouterTest extends TestCase
         $container->method('get')->willReturn([]);
         $container->method('has')->willReturn(true);
 
-        $router = new TelegramRouter($collection, $container);
+        $router = new TelegramRouter($collection, $container, $this->getResolver());
 
         $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::badMethod'));
 
@@ -151,7 +152,7 @@ class TelegramRouterTest extends TestCase
         $container = $this->getContainerWrapperMock();
         $container->method('has')->willReturn(null);
 
-        $router = new TelegramRouter($collection, $container);
+        $router = new TelegramRouter($collection, $container, $this->getResolver());
 
         $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::method'));
 
@@ -167,7 +168,8 @@ class TelegramRouterTest extends TestCase
     {
         $router = new TelegramRouter(
             $this->createMock(TelegramRouteCollectionInterface::class),
-            $this->getContainerWrapperMock()
+            $this->getContainerWrapperMock(),
+            $this->getResolver()
         );
 
         $method = new ReflectionMethod(TelegramRouter::class, 'getControllerClassAndMethod');
@@ -185,7 +187,8 @@ class TelegramRouterTest extends TestCase
     {
         $router = new TelegramRouter(
             $this->createMock(TelegramRouteCollectionInterface::class),
-            $this->getContainerWrapperMock()
+            $this->getContainerWrapperMock(),
+            $this->getResolver()
         );
 
         $method = new ReflectionMethod(TelegramRouter::class, 'getControllerClassAndMethod');
@@ -203,7 +206,8 @@ class TelegramRouterTest extends TestCase
     {
         $router = new TelegramRouter(
             $this->createMock(TelegramRouteCollectionInterface::class),
-            $this->getContainerWrapperMock()
+            $this->getContainerWrapperMock(),
+            $this->getResolver()
         );
 
         $method = new ReflectionMethod(TelegramRouter::class, 'getControllerClassAndMethod');
@@ -215,6 +219,13 @@ class TelegramRouterTest extends TestCase
             $router,
             new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'class::method::i')
         );
+    }
+
+    private function getResolver($response = []): ParamResolverInterface
+    {
+        $resolver = $this->createMock(ParamResolverInterface::class);
+        $resolver->method('resolve')->willReturn($response);
+        return $resolver;
     }
 
     /**

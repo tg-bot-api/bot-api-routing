@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting;
 
+use Closure;
 use TgBotApi\BotApiRouting\Contracts\ExtractorInterface;
 use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
@@ -60,7 +61,7 @@ class TelegramRoute implements TelegramRouteInterface
     }
 
     /**
-     * @return callable|string|null
+     * @return Closure|string|null
      */
     public function getEndpoint()
     {

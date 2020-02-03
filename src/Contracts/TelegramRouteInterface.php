@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting\Contracts;
 
+use Closure;
+
 interface TelegramRouteInterface
 {
     /**
@@ -11,7 +13,7 @@ interface TelegramRouteInterface
     public function getRules(): array;
 
     /**
-     * @return callable|string|null
+     * @return Closure|string|null
      */
     public function getEndpoint();
 

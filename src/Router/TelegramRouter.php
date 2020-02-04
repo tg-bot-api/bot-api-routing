@@ -11,7 +11,6 @@ use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramResponseInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
-use TgBotApi\BotApiRouting\Exceptions\RouterParameterException;
 use TgBotApi\BotApiRouting\Exceptions\RoutingException;
 use TgBotApi\BotApiRouting\TelegramResponse;
 
@@ -36,7 +35,6 @@ class TelegramRouter extends AbstractTelegramRouter
      *
      * @return TelegramResponse
      *
-     * @throws RouterParameterException
      * @throws RoutingException
      */
     protected function invokeUpdate(RouterUpdateInterface $update): ?TelegramResponseInterface
@@ -88,13 +86,13 @@ class TelegramRouter extends AbstractTelegramRouter
     /**
      * @param TelegramRouteInterface $route
      * @return array
-     * @throws RouterParameterException
+     * @throws RoutingException
      */
     private function getControllerClassAndMethod(TelegramRouteInterface $route): array
     {
         $routeParts = explode('::', $route->getEndpoint());
         if (count($routeParts) > 2) {
-            throw new RouterParameterException(sprintf(
+            throw new RoutingException(sprintf(
                 '`%s` is not valid class and method name. Please use class::method format or use Invokable class path.',
                 $route->getEndpoint()
             ));

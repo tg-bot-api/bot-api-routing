@@ -10,7 +10,6 @@ use Psr\Container\ContainerInterface;
 use ReflectionMethod;
 use TgBotApi\BotApiRouting\Contracts\ParamResolverInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
-use TgBotApi\BotApiRouting\Exceptions\RouterParameterException;
 use TgBotApi\BotApiRouting\Exceptions\RoutingException;
 use TgBotApi\BotApiRouting\Interfaces\UpdateTypeTypes;
 use TgBotApi\BotApiRouting\Rules\traits\GetRouterUpdateTrait;
@@ -213,7 +212,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'getControllerClassAndMethod');
         $method->setAccessible(true);
 
-        $this->expectException(RouterParameterException::class);
+        $this->expectException(RoutingException::class);
 
         $method->invoke(
             $router,

@@ -62,7 +62,7 @@ abstract class AbstractExtractor implements ExtractorInterface
      */
     protected function checkContextAvailability(ContextInterface $context, string $key): void
     {
-        if ($context->isSet($key)) {
+        if ($context->has($key)) {
             throw new RouteExtractionException(sprintf('%s variable already set in context', $key));
         }
     }

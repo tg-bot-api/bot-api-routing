@@ -16,7 +16,7 @@ class Context implements ContextInterface
      * @param string $id
      * @return mixed|null
      */
-    public function get(string $id)
+    public function get($id)
     {
         return $this->data[$id] ?? null;
     }
@@ -36,7 +36,7 @@ class Context implements ContextInterface
      * @param string $id
      * @return bool
      */
-    public function isSet(string $id): bool
+    public function has($id): bool
     {
         return array_key_exists($id, $this->data);
     }

@@ -107,6 +107,13 @@ class ReflectionParamResolver implements ParamResolverInterface
         if ($typeName && !$this->isNotExtractableType($typeName)) {
             $containers = ['Context' => $update->getContext(), 'Container' => $this->container];
         }
+
+        foreach ($containers as $container) {
+            if ($container instanceof $typeName) {
+                return $container;
+            }
+        }
+
         foreach ($containers as $key => $container) {
             try {
                 $contextValue = $this->getParamFromContextByType(

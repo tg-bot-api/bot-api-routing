@@ -3,13 +3,16 @@ declare(strict_types=1);
 
 namespace TgBotApi\BotApiRouting\Router;
 
+use MyProject\Container;
 use PHPUnit\Framework\TestCase;
 use TgBotApi\BotApiRouting\Context;
+use TgBotApi\BotApiRouting\Contracts\ContextInterface;
 use TgBotApi\BotApiRouting\Contracts\DTO\ParamRequest;
 use TgBotApi\BotApiRouting\Exceptions\InvalidTypeException;
 use TgBotApi\BotApiRouting\Exceptions\ParameterExtractionException;
 use TgBotApi\BotApiRouting\Extractors\ArrayExtractor;
 use TgBotApi\BotApiRouting\Rules\traits\GetRouterUpdateTrait;
+use TgBotApi\BotApiRouting\Stubs\ContainerStub;
 use TgBotApi\BotApiRouting\Stubs\ControllerStub;
 
 class ReflectionParamResolverTest extends TestCase
@@ -38,22 +41,22 @@ class ReflectionParamResolverTest extends TestCase
 
     public function testResolveFromContainerByType(): void
     {
-        $container = new Context();
         $extractor = new ArrayExtractor();
+        $container = new ContainerStub([ArrayExtractor::class => $extractor]);
+
+        $update = $this->getRouterUpdate();
 
         $request = ParamRequest::createFromClosure(
-            $this->getRouterUpdate(),
-            static function (ArrayExtractor $extractor) {
+            $update,
+            static function (ArrayExtractor $extractor, ContextInterface $context, ContainerStub $container) {
             }
         );
-
-        $container->set(ArrayExtractor::class, $extractor);
 
         $resolver = new ReflectionParamResolver($container);
 
         $result = $resolver->resolve($request);
 
-        $this->assertEquals([$extractor], $result);
+        $this->assertEquals([$extractor, $update->getContext(), $container], $result);
     }
 
     public function testResolveFromContainerByName(): void

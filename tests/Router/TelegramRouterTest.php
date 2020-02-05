@@ -8,6 +8,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use ReflectionMethod;
+use TgBotApi\BotApiRouting\Contracts\DTO\ParamRequest;
 use TgBotApi\BotApiRouting\Contracts\ParamResolverInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
 use TgBotApi\BotApiRouting\Exceptions\RoutingException;
@@ -89,7 +90,19 @@ class TelegramRouterTest extends TestCase
         $container->method('get')->willReturn($controllerStub);
         $container->method('has')->willReturn(true);
 
-        $router = new TelegramRouter($collection, $container, $this->getResolver());
+
+        $resolver = $this->createMock(ParamResolverInterface::class);
+
+        $resolver->expects($this->once())
+            ->method('resolve')
+            ->willReturnCallback(static function (ParamRequest $paramRequest) use ($update, $controllerStub) {
+                TestCase::assertEquals($controllerStub, $paramRequest->getClass());
+                TestCase::assertEquals('__invoke', $paramRequest->getMethodName());
+                TestCase::assertEquals($update, $paramRequest->getUpdate());
+                return [];
+            });
+
+        $router = new TelegramRouter($collection, $container, $resolver);
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);

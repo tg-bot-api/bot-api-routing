@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TgBotApi\BotApiRouting\Router;
 
 use Psr\Container\ContainerInterface;
+use TgBotApi\BotApiBase\Type\UpdateType;
 use TgBotApi\BotApiRouting\Contracts\ExtractorInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouterInterface;
@@ -60,6 +61,10 @@ abstract class AbstractTelegramRouter implements TelegramRouterInterface
      */
     protected function extractRouteData(RouterUpdateInterface $update): void
     {
+        $update->getContext()->set(UpdateType::class, $update->getUpdate());
+        $update->getContext()->set(TelegramRouteInterface::class, $update->getActivatedRoute());
+        $update->getContext()->set(RouterUpdateInterface::class, $update);
+
         if (!($update->getActivatedRoute() instanceof TelegramRouteInterface)) {
             throw new \LogicException('ActivatedRoute should be an instance of TelegramRouteInterface!');
         }

@@ -78,7 +78,7 @@ class TelegramRouter extends AbstractTelegramRouter
             ));
         }
 
-        $params = $this->paramResolver->resolve(ParamRequest::createFromMethodAndClass($update, $endpoint, $class));
+        $params = $this->paramResolver->resolve(ParamRequest::createFromMethodAndClass($update, $methodName, $class));
 
         return $class->$methodName(...$params);
     }

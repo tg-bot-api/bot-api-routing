@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace TgBotApi\BotApiRouting;
 
 use TgBotApi\BotApiRouting\Contracts\RouteSetterTypes;
-use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 
 class RouteSetterCollector
 {

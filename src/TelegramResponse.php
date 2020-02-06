@@ -17,7 +17,7 @@ class TelegramResponse implements TelegramResponseInterface
     /**
      * @var callable[]
      */
-    private $callbacks;
+    private $callbacks = [];
 
     public function __construct(MethodInterface $method)
     {

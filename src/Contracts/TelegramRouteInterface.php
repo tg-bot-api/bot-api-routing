@@ -23,18 +23,17 @@ interface TelegramRouteInterface
     public function getExtractors(): array;
 
     /**
+     * @return int
+     */
+    public function getWeight(): int;
+
+    /**
      * @param                                 $fields
      * @param string|array|ExtractorInterface $extractor
      * @return TelegramRouteInterface
      * @todo !!important replace to other place
      */
     public function extract(array $fields, $extractor = null): TelegramRouteInterface;
-
-    /**
-     * /**
-     * @return string
-     */
-    public function getUpdateType(): string;
 
     /**
      * @param RouterUpdateInterface $update

@@ -47,7 +47,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], static function ($message) {
+        $update->setActivatedRoute(new TelegramRoute([], static function ($message) {
             Assert::assertEquals($message->text, 'text');
         }));
 
@@ -73,7 +73,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::method'));
+        $update->setActivatedRoute(new TelegramRoute([], 'path::method'));
 
         $method->invoke($router, $update);
     }
@@ -107,7 +107,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path'));
+        $update->setActivatedRoute(new TelegramRoute([], 'path'));
 
         $method->invoke($router, $update);
     }
@@ -128,7 +128,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::badMethod'));
+        $update->setActivatedRoute(new TelegramRoute([], 'path::badMethod'));
 
         $this->expectException(RoutingException::class);
 
@@ -146,7 +146,7 @@ class TelegramRouterTest extends TestCase
 
         $router = new TelegramRouter($collection, $container, $this->getResolver());
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::badMethod'));
+        $update->setActivatedRoute(new TelegramRoute([], 'path::badMethod'));
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -166,7 +166,7 @@ class TelegramRouterTest extends TestCase
 
         $router = new TelegramRouter($collection, $container, $this->getResolver());
 
-        $update->setActivatedRoute(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'path::method'));
+        $update->setActivatedRoute(new TelegramRoute([], 'path::method'));
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -189,7 +189,7 @@ class TelegramRouterTest extends TestCase
 
         $result = $method->invoke(
             $router,
-            new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'class::method')
+            new TelegramRoute( [], 'class::method')
         );
 
         $this->assertEquals($result, ['class', 'method']);
@@ -208,7 +208,7 @@ class TelegramRouterTest extends TestCase
 
         $result = $method->invoke(
             $router,
-            new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'class')
+            new TelegramRoute([], 'class')
         );
 
         $this->assertEquals($result, ['class', '__invoke']);
@@ -229,7 +229,7 @@ class TelegramRouterTest extends TestCase
 
         $method->invoke(
             $router,
-            new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [], 'class::method::i')
+            new TelegramRoute([], 'class::method::i')
         );
     }
 
@@ -251,7 +251,7 @@ class TelegramRouterTest extends TestCase
     private function getCollection(array $rules): TelegramRouteCollection
     {
         $collection = new TelegramRouteCollection();
-        $collection->add(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, $rules, 'endpoint'))
+        $collection->add(new TelegramRoute($rules, 'endpoint'))
             ->extract(['text' => 'message.text', 'message' => 'message']);
 
         return $collection;

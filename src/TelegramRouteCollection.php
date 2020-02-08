@@ -9,9 +9,21 @@ use TgBotApi\BotApiRouting\Contracts\TelegramRouteInterface;
 class TelegramRouteCollection implements TelegramRouteCollectionInterface
 {
     /**
-     * @var array
+     * @var TelegramRouteInterface[]
      */
     private $collection = [];
+
+    /**
+     * TelegramRouteCollection constructor.
+     *
+     * @param TelegramRouteInterface[] $routes
+     */
+    public function __construct(iterable $routes = [])
+    {
+        foreach ($routes as $route) {
+            $this->add($route);
+        }
+    }
 
     /**
      * @param TelegramRouteInterface $route
@@ -19,16 +31,15 @@ class TelegramRouteCollection implements TelegramRouteCollectionInterface
      */
     public function add(TelegramRouteInterface $route): TelegramRouteInterface
     {
-        $this->collection[$route->getUpdateType()][] = $route;
+        $this->collection[] = $route;
         return $route;
     }
 
     /**
-     * @param string $updateType
      * @return TelegramRoute[]
      */
-    public function get(string $updateType): ?array
+    public function get(): array
     {
-        return $this->collection[$updateType] ?? null;
+        return $this->collection;
     }
 }

@@ -44,12 +44,10 @@ abstract class AbstractTelegramRouter implements TelegramRouterInterface
      */
     public function dispatch(RouterUpdateInterface $update): ?TelegramResponseInterface
     {
-        if ($this->collection->get($update->getType())) {
-            foreach ($this->collection->get($update->getType()) as $route) {
-                if ($route->match($update)) {
-                    $this->extractRouteData($update);
-                    return $this->invokeUpdate($update);
-                }
+        foreach ($this->collection->get() as $route) {
+            if ($route->match($update)) {
+                $this->extractRouteData($update);
+                return $this->invokeUpdate($update);
             }
         }
         return null;

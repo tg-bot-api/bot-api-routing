@@ -86,7 +86,7 @@ class AbstractTelegramRouterTest extends TestCase
             new RegexMessageTextRule('/^text/'),
         ]);
 
-        $route = new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, [new IsTextMessageRule()], 'endpoint');
+        $route = new TelegramRoute([new IsTextMessageRule()], 'endpoint');
         $reflection = new ReflectionClass($route);
         $reflectionProperty = $reflection->getProperty('extractors');
         $reflectionProperty->setAccessible(true);
@@ -108,7 +108,6 @@ class AbstractTelegramRouterTest extends TestCase
         $collection = new TelegramRouteCollection();
         $route = $this->createMock(TelegramRoute::class);
         $route->method('match')->willReturn(true);
-        $route->method('getUpdateType')->willReturn(UpdateTypeTypes::TYPE_MESSAGE);
         $collection->add($route);
 
         $router = $this->getAbstractRouterMock($collection, $this->getContainerWrapperMock());
@@ -140,7 +139,7 @@ class AbstractTelegramRouterTest extends TestCase
     private function getCollection(array $rules): TelegramRouteCollection
     {
         $collection = new TelegramRouteCollection();
-        $collection->add(new TelegramRoute(UpdateTypeTypes::TYPE_MESSAGE, $rules, 'endpoint'))
+        $collection->add(new TelegramRoute($rules, 'endpoint'))
             ->extract(['text' => 'message.text', 'message' => 'message']);
 
         return $collection;

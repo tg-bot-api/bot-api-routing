@@ -19,11 +19,6 @@ use TgBotApi\BotApiRouting\Extractors\ArrayExtractor;
 class TelegramRoute implements TelegramRouteInterface
 {
     /**
-     * @var string
-     */
-    protected $updateType;
-
-    /**
      * @var RouteRuleInterface[]
      */
     protected $rules;
@@ -39,15 +34,20 @@ class TelegramRoute implements TelegramRouteInterface
     protected $extractors = [];
 
     /**
+     * @var int
+     */
+    protected $weight;
+
+    /**
      * TelegramRoute constructor.
      *
-     * @param string               $updateType
      * @param RouteRuleInterface[] $rules
      * @param string|callable      $endpoint
+     * @param int|null             $weight
      */
-    public function __construct(string $updateType, array $rules, $endpoint)
+    public function __construct(array $rules, $endpoint, int $weight = 0)
     {
-        $this->updateType = $updateType;
+        $this->weight = $weight;
         $this->rules = $rules;
         $this->endpoint = $endpoint;
     }
@@ -71,7 +71,7 @@ class TelegramRoute implements TelegramRouteInterface
     /**
      * @param array                           $fields
      * @param string|array|ExtractorInterface $extractor
-     * @return TelegramRoute
+     * @return TelegramRouteInterface
      * @throws RouteExtractionException
      */
     public function extract(array $fields, $extractor = null): TelegramRouteInterface
@@ -118,15 +118,6 @@ class TelegramRoute implements TelegramRouteInterface
     }
 
     /**
-     * /**
-     * @return string
-     */
-    public function getUpdateType(): string
-    {
-        return $this->updateType;
-    }
-
-    /**
      * @return array[ExtractorInterface, array]
      */
     public function getExtractors(): array
@@ -147,5 +138,13 @@ class TelegramRoute implements TelegramRouteInterface
         }
         $update->setActivatedRoute($this);
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWeight(): int
+    {
+        return $this->weight;
     }
 }

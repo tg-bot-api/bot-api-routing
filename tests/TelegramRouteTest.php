@@ -19,11 +19,15 @@ class TelegramRouteTest extends TestCase
 {
     use GetRouterUpdateTrait;
 
-    public function testGetUpdateType(): void
+    public function testWeight(): void
     {
-        $route = $this->createRoute();
-        $this->assertEquals(UpdateTypeTypes::TYPE_MESSAGE, $route->getUpdateType());
-        $this->assertNotEquals(UpdateTypeTypes::TYPE_CHANNEL_POST, $route->getUpdateType());
+        $route = new TelegramRoute([], 'endpoint');
+        $route2 = new TelegramRoute([], 'endpoint', 1);
+        $route3 = new TelegramRoute([], 'endpoint', 2);
+
+        $this->assertEquals($route->getWeight(), 0);
+        $this->assertEquals($route2->getWeight(), 1);
+        $this->assertEquals($route3->getWeight(), 2);
     }
 
     public function testGetRules(): void
@@ -127,7 +131,6 @@ class TelegramRouteTest extends TestCase
     public function createRoute(): TelegramRoute
     {
         return new TelegramRoute(
-            RouteSetterTypes::TYPE_MESSAGE,
             [new IsTextMessageRule(), new ChatTypeRule([ChatType::TYPE_PRIVATE])],
             static function ($update) {
                 return $update;

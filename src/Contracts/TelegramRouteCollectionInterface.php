@@ -12,8 +12,7 @@ interface TelegramRouteCollectionInterface
     public function add(TelegramRouteInterface $route): TelegramRouteInterface;
 
     /**
-     * @param string $updateType
      * @return TelegramRouteInterface[]
      */
-    public function get(string $updateType): ?array;
+    public function get(): array;
 }

@@ -19,9 +19,9 @@ use TgBotApi\BotApiRouting\Extractors\ArrayExtractor;
 class TelegramRoute implements TelegramRouteInterface
 {
     /**
-     * @var RouteRuleInterface[]
+     * @var RouteRuleInterface
      */
-    protected $rules;
+    protected $rule;
 
     /**
      * @var callable|string|null
@@ -41,23 +41,23 @@ class TelegramRoute implements TelegramRouteInterface
     /**
      * TelegramRoute constructor.
      *
-     * @param RouteRuleInterface[] $rules
-     * @param string|callable      $endpoint
-     * @param int|null             $weight
+     * @param RouteRuleInterface $rule
+     * @param string|callable    $endpoint
+     * @param int|null           $weight
      */
-    public function __construct(array $rules, $endpoint, int $weight = 0)
+    public function __construct(RouteRuleInterface $rule, $endpoint, int $weight = 0)
     {
         $this->weight = $weight;
-        $this->rules = $rules;
+        $this->rule = $rule;
         $this->endpoint = $endpoint;
     }
 
     /**
-     * @return RouteRuleInterface[]
+     * @return RouteRuleInterface
      */
-    public function getRules(): array
+    public function getRule(): RouteRuleInterface
     {
-        return $this->rules;
+        return $this->rule;
     }
 
     /**
@@ -131,10 +131,8 @@ class TelegramRoute implements TelegramRouteInterface
      */
     public function match(RouterUpdateInterface $update): bool
     {
-        foreach ($this->rules as $rule) {
-            if (!$rule->match($update)) {
-                return false;
-            }
+        if (!$this->rule->match($update)) {
+            return false;
         }
         $update->setActivatedRoute($this);
         return true;

@@ -5,12 +5,11 @@ namespace TgBotApi\BotApiRouting;
 
 use PHPUnit\Framework\TestCase;
 use TgBotApi\BotApiBase\Type\ChatType;
-use TgBotApi\BotApiBase\Type\MessageType;
-use TgBotApi\BotApiRouting\Contracts\RouteSetterTypes;
+use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionException;
 use TgBotApi\BotApiRouting\Extractors\ArrayExtractor;
 use TgBotApi\BotApiRouting\Extractors\LiteralCommandExtractor;
-use TgBotApi\BotApiRouting\Interfaces\UpdateTypeTypes;
+use TgBotApi\BotApiRouting\Rules\AggregationRule;
 use TgBotApi\BotApiRouting\Rules\ChatTypeRule;
 use TgBotApi\BotApiRouting\Rules\IsTextMessageRule;
 use TgBotApi\BotApiRouting\Rules\traits\GetRouterUpdateTrait;
@@ -21,9 +20,9 @@ class TelegramRouteTest extends TestCase
 
     public function testWeight(): void
     {
-        $route = new TelegramRoute([], 'endpoint');
-        $route2 = new TelegramRoute([], 'endpoint', 1);
-        $route3 = new TelegramRoute([], 'endpoint', 2);
+        $route = new TelegramRoute(new AggregationRule(), 'endpoint');
+        $route2 = new TelegramRoute(new AggregationRule(), 'endpoint', 1);
+        $route3 = new TelegramRoute(new AggregationRule(), 'endpoint', 2);
 
         $this->assertEquals($route->getWeight(), 0);
         $this->assertEquals($route2->getWeight(), 1);
@@ -32,9 +31,10 @@ class TelegramRouteTest extends TestCase
 
     public function testGetRules(): void
     {
-        $route = $this->createRoute();
-        $this->assertEquals([new IsTextMessageRule(), new ChatTypeRule([ChatType::TYPE_PRIVATE])], $route->getRules());
-        $this->assertNotEquals([], $route->getRules());
+        $rule = new IsTextMessageRule();
+        $route = $this->createRoute($rule);
+        $this->assertEquals($rule, $route->getRule());
+        $this->assertNotNull($route->getRule());
     }
 
     public function testGetExtractors(): void
@@ -128,10 +128,10 @@ class TelegramRouteTest extends TestCase
         $this->assertFalse($route->match($update));
     }
 
-    public function createRoute(): TelegramRoute
+    public function createRoute(RouteRuleInterface $rule = null): TelegramRoute
     {
         return new TelegramRoute(
-            [new IsTextMessageRule(), new ChatTypeRule([ChatType::TYPE_PRIVATE])],
+            $rule ?: new AggregationRule(new IsTextMessageRule(), new ChatTypeRule([ChatType::TYPE_PRIVATE])),
             static function ($update) {
                 return $update;
             }

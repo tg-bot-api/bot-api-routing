@@ -8,9 +8,9 @@ use Closure;
 interface TelegramRouteInterface
 {
     /**
-     * @return RouteRuleInterface[]
+     * @return RouteRuleInterface
      */
-    public function getRules(): array;
+    public function getRule(): RouteRuleInterface;
 
     /**
      * @return Closure|string|null

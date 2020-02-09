@@ -8,11 +8,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use TgBotApi\BotApiBase\Method\GetMeMethod;
+use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\RouterUpdateInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouterInterface;
 use TgBotApi\BotApiRouting\Exceptions\RouteExtractionException;
 use TgBotApi\BotApiRouting\Interfaces\UpdateTypeTypes;
+use TgBotApi\BotApiRouting\Rules\AggregationRule;
 use TgBotApi\BotApiRouting\Rules\IsTextMessageRule;
 use TgBotApi\BotApiRouting\Rules\RegexMessageTextRule;
 use TgBotApi\BotApiRouting\Rules\traits\GetRouterUpdateTrait;
@@ -26,9 +28,7 @@ class AbstractTelegramRouterTest extends TestCase
 
     public function testDispatch(): void
     {
-        $collection = $this->getCollection([
-            new IsTextMessageRule()
-        ]);
+        $collection = $this->getCollection(new IsTextMessageRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $router = $this->getAbstractRouterMock($collection, $this->getContainerWrapperMock());
@@ -42,10 +42,10 @@ class AbstractTelegramRouterTest extends TestCase
 
     public function testAnotherDispatch(): void
     {
-        $collection = $this->getCollection([
+        $collection = $this->getCollection(new AggregationRule(
             new RegexMessageTextRule('/^anotherText$/'),
             new IsTextMessageRule()
-        ]);
+        ));
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'anotherText';
         $router = $this->getAbstractRouterMock($collection, $this->getContainerWrapperMock());
@@ -62,10 +62,10 @@ class AbstractTelegramRouterTest extends TestCase
 
     public function testNotDispatch(): void
     {
-        $collection = $this->getCollection([
+        $collection = $this->getCollection(new AggregationRule(
             new IsTextMessageRule(),
-            new RegexMessageTextRule('/^text/'),
-        ]);
+            new RegexMessageTextRule('/^text/')
+        ));
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'Not Matched Text';
 
@@ -81,12 +81,12 @@ class AbstractTelegramRouterTest extends TestCase
 
     public function testExtractionException(): void
     {
-        $collection = $this->getCollection([
+        $collection = $this->getCollection(new AggregationRule(
             new IsTextMessageRule(),
-            new RegexMessageTextRule('/^text/'),
-        ]);
+            new RegexMessageTextRule('/^text/')
+        ));
 
-        $route = new TelegramRoute([new IsTextMessageRule()], 'endpoint');
+        $route = new TelegramRoute(new IsTextMessageRule(), 'endpoint');
         $reflection = new ReflectionClass($route);
         $reflectionProperty = $reflection->getProperty('extractors');
         $reflectionProperty->setAccessible(true);
@@ -136,10 +136,10 @@ class AbstractTelegramRouterTest extends TestCase
         );
     }
 
-    private function getCollection(array $rules): TelegramRouteCollection
+    private function getCollection(RouteRuleInterface $rule): TelegramRouteCollection
     {
         $collection = new TelegramRouteCollection();
-        $collection->add(new TelegramRoute($rules, 'endpoint'))
+        $collection->add(new TelegramRoute($rule, 'endpoint'))
             ->extract(['text' => 'message.text', 'message' => 'message']);
 
         return $collection;

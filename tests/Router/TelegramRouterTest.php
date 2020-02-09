@@ -10,9 +10,11 @@ use Psr\Container\ContainerInterface;
 use ReflectionMethod;
 use TgBotApi\BotApiRouting\Contracts\DTO\ParamRequest;
 use TgBotApi\BotApiRouting\Contracts\ParamResolverInterface;
+use TgBotApi\BotApiRouting\Contracts\RouteRuleInterface;
 use TgBotApi\BotApiRouting\Contracts\TelegramRouteCollectionInterface;
 use TgBotApi\BotApiRouting\Exceptions\RoutingException;
 use TgBotApi\BotApiRouting\Interfaces\UpdateTypeTypes;
+use TgBotApi\BotApiRouting\Rules\AggregationRule;
 use TgBotApi\BotApiRouting\Rules\traits\GetRouterUpdateTrait;
 use TgBotApi\BotApiRouting\Stubs\ControllerStub;
 use TgBotApi\BotApiRouting\TelegramRoute;
@@ -24,7 +26,7 @@ class TelegramRouterTest extends TestCase
 
     public function testDispatchNoActivatedRoute(): void
     {
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $router = new TelegramRouter($collection, $this->getContainerWrapperMock(), $this->getResolver());
@@ -38,7 +40,7 @@ class TelegramRouterTest extends TestCase
 
     public function testDispatchCallback(): void
     {
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $resolver = $this->getResolver([$update->getUpdate()->message]);
@@ -47,7 +49,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute([], static function ($message) {
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), static function ($message) {
             Assert::assertEquals($message->text, 'text');
         }));
 
@@ -61,7 +63,7 @@ class TelegramRouterTest extends TestCase
         $controllerStub = $this->createMock(ControllerStub::class);
         $controllerStub->expects($this->once())->method('method')->willReturn(null);
 
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $container = $this->getContainerWrapperMock();
@@ -73,7 +75,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute([], 'path::method'));
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), 'path::method'));
 
         $method->invoke($router, $update);
     }
@@ -83,7 +85,7 @@ class TelegramRouterTest extends TestCase
         $controllerStub = $this->createMock(ControllerStub::class);
         $controllerStub->expects($this->once())->method('__invoke')->willReturn(null);
 
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $container = $this->getContainerWrapperMock();
@@ -107,7 +109,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute([], 'path'));
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), 'path'));
 
         $method->invoke($router, $update);
     }
@@ -116,7 +118,7 @@ class TelegramRouterTest extends TestCase
     {
         $controllerStub = $this->createMock(ControllerStub::class);
 
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $container = $this->getContainerWrapperMock();
@@ -128,7 +130,7 @@ class TelegramRouterTest extends TestCase
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
 
-        $update->setActivatedRoute(new TelegramRoute([], 'path::badMethod'));
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), 'path::badMethod'));
 
         $this->expectException(RoutingException::class);
 
@@ -137,7 +139,7 @@ class TelegramRouterTest extends TestCase
 
     public function testDispatchStubBadClass(): void
     {
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $container = $this->getContainerWrapperMock();
@@ -146,7 +148,7 @@ class TelegramRouterTest extends TestCase
 
         $router = new TelegramRouter($collection, $container, $this->getResolver());
 
-        $update->setActivatedRoute(new TelegramRoute([], 'path::badMethod'));
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), 'path::badMethod'));
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -158,7 +160,7 @@ class TelegramRouterTest extends TestCase
 
     public function testDispatchNoControllerInContainer(): void
     {
-        $collection = $this->getCollection([]);
+        $collection = $this->getCollection(new AggregationRule());
         $update = $this->getRouterUpdate();
         $update->getUpdate()->message->text = 'text';
         $container = $this->getContainerWrapperMock();
@@ -166,7 +168,7 @@ class TelegramRouterTest extends TestCase
 
         $router = new TelegramRouter($collection, $container, $this->getResolver());
 
-        $update->setActivatedRoute(new TelegramRoute([], 'path::method'));
+        $update->setActivatedRoute(new TelegramRoute(new AggregationRule(), 'path::method'));
 
         $method = new ReflectionMethod(TelegramRouter::class, 'invokeUpdate');
         $method->setAccessible(true);
@@ -189,7 +191,7 @@ class TelegramRouterTest extends TestCase
 
         $result = $method->invoke(
             $router,
-            new TelegramRoute( [], 'class::method')
+            new TelegramRoute(new AggregationRule(), 'class::method')
         );
 
         $this->assertEquals($result, ['class', 'method']);
@@ -208,7 +210,7 @@ class TelegramRouterTest extends TestCase
 
         $result = $method->invoke(
             $router,
-            new TelegramRoute([], 'class')
+            new TelegramRoute(new AggregationRule(), 'class')
         );
 
         $this->assertEquals($result, ['class', '__invoke']);
@@ -229,7 +231,7 @@ class TelegramRouterTest extends TestCase
 
         $method->invoke(
             $router,
-            new TelegramRoute([], 'class::method::i')
+            new TelegramRoute(new AggregationRule(), 'class::method::i')
         );
     }
 
@@ -248,10 +250,10 @@ class TelegramRouterTest extends TestCase
         return $this->createMock(ContainerInterface::class);
     }
 
-    private function getCollection(array $rules): TelegramRouteCollection
+    private function getCollection(RouteRuleInterface $rule): TelegramRouteCollection
     {
         $collection = new TelegramRouteCollection();
-        $collection->add(new TelegramRoute($rules, 'endpoint'))
+        $collection->add(new TelegramRoute($rule, 'endpoint'))
             ->extract(['text' => 'message.text', 'message' => 'message']);
 
         return $collection;
